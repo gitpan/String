@@ -1,6 +1,6 @@
 package String;
 
-# $Id: String.pm,v 1.4 2003/05/16 11:09:09 sherzodr Exp $
+# $Id: String.pm,v 1.5 2003/05/16 11:43:20 sherzodr Exp $
 
 use strict;
 use Carp;
@@ -10,7 +10,7 @@ use overload (
     fallback => 'asString'
   );
 
-$VERSION = '1.3';
+$VERSION = '1.4';
 
 # Preloaded methods go here.
 
@@ -128,17 +128,9 @@ sub match {
   unless ( defined $pattern ) {
     croak "Usage: STRING->match(PATTERN)";
   }
-
-  my @rv = ();
-  if ( $$string =~ m/$pattern/ ) {
-    push @rv, $string->new($&);
-    # setting initial value for the number of capturing paranthesis
-    my $capturing = 0;
-    {
-      my $cpOfPattern = $pattern;
-      $cpOfPattern =~ s/\([^?].*?\)/$capturing++/eg;
-    }
-    push (@rv,  $string->new(eval "\$$_")) for 1..$capturing;
+  my @rv = map { $string->new($_) } $$string =~ m/$pattern/g;
+  if ( defined($&) ) {
+    unshift @rv, $string->new($&);
     return \@rv;
   }
   return undef;

@@ -7,9 +7,10 @@
 
 use Test;
 use strict;
+use Data::Dumper;
 use diagnostics;
 BEGIN {
-  plan tests => 31;
+  plan tests => 32;
 };
 require String;
 ok(1); # If we made it this far, we're ok.
@@ -74,6 +75,7 @@ ok($result->[1] eq 'sherzodr');
 ok($result->[2] eq 'cpan.org');
 ok(ref($result->[0]) eq 'String');
 ok($result->[2]->match('^cpan\.org$') );
+ok($str4->match('sherzodr@hotmail.com') ? 0 : 1);
 
 # in the end we still need to make sure that with all the above
 # operations we didn't alter the original string
