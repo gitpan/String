@@ -10,7 +10,7 @@ use strict;
 use Data::Dumper;
 use diagnostics;
 BEGIN {
-  plan tests => 32;
+  plan tests => 35;
 };
 require String;
 ok(1); # If we made it this far, we're ok.
@@ -35,13 +35,15 @@ ok($str->charAt( $str->length-1 ) eq $str->charAt(-1) );
 
 my $concat = $str->concat(" ", "Ruzmetov");
 ok($concat eq "Sherzod Ruzmetov");
-ok(ref($concat) eq 'String');
+ok($concat->isa('String'));
+
+
 
 my $str2 = new String("Ruzmetov");
 
 ok( $str->eq("Sherzod") );
 ok($str->concat($str2) eq "SherzodRuzmetov");
-ok($str . $str2 eq "SherzodRuzmetov");
+ok($str . " " . $str2 eq "Sherzod Ruzmetov");
 
 
 ok($str->indexOf('er') == 2);
@@ -77,9 +79,22 @@ ok(ref($result->[0]) eq 'String');
 ok($result->[2]->match('^cpan\.org$') );
 ok($str4->match('sherzodr@hotmail.com') ? 0 : 1);
 
+
+# testing overloaded '+' operator
+my $str5 = new String("Hello");
+ok($str5->as_string eq 'Hello');
+$str5 += " World";
+ok($str5 eq "Hello World");
+
+my $str6 = " " + $str5 + " " + $str4;
+ok($str6 eq " Hello World Sherzod Ruzmetov <sherzodr\@cpan.org>");
+
 # in the end we still need to make sure that with all the above
 # operations we didn't alter the original string
 ok($str eq 'Sherzod');
 ok($str2 eq 'Ruzmetov');
 ok($str3 eq 'Hello World');
 ok($str4 eq 'Sherzod Ruzmetov <sherzodr@cpan.org>');
+
+
+

@@ -1,16 +1,17 @@
 package String;
 
-# $Id: String.pm,v 1.5 2003/05/16 11:43:20 sherzodr Exp $
+# $Id: String.pm,v 1.7 2003/07/23 03:50:50 sherzodr Exp $
 
 use strict;
 use Carp;
 use vars qw($VERSION);
 use overload (
     '""'     => 'asString',
-    fallback => 'asString'
+    "+"      => "add",
+    fallback => 'asString',
   );
 
-$VERSION = '1.4';
+$VERSION = '1.5';
 
 # Preloaded methods go here.
 
@@ -27,7 +28,7 @@ sub DESTROY {
 sub new {
   my $class = shift;
   $class = ref($class) || $class;
-  my $string = $_[0];
+  my $string = shift;
   if ( ref($string) && (ref($string) eq 'SCALAR') ) {
     $string = $$string;
   } elsif ( ref($string) ) {
@@ -55,39 +56,57 @@ sub charAt {
 
 
 
+*as_string = \&asString;
 sub asString {
   my $string = shift;
   return $$string;
 }
 
 
+*append = \&concat;
 sub concat {
   my $string = shift;
 
   my $newStr = join ("", $$string, @_);
-  return $string->new($newStr);
+  return $string->new($newStr)
 }
 
 
+sub prepend {
+    my $string = shift;
+    my $newStr = join("", @_, $$string);
+    return $string->new($newStr)
+}
 
+sub add {
+   my ($string_obj, $string2, $bool) = @_;
+
+   if ( $bool ) {
+       return $string_obj->prepend($string2)
+   }
+   return $string_obj->concat($string2)
+}
+
+
+*index = \&indexOf;
 sub indexOf {
   my ($string, $substring, $start) = @_;
 
-  return CORE::index($$string, $substring, $start||0);
+  return CORE::index($$string, $substring, $start||0)
 }
 
 
 sub toUpperCase {
   my $string = shift;
 
-  return $string->new(uc($$string));
+  return $string->new(uc($$string))
 }
 
 
 sub toLowerCase {
   my $string = shift;
 
-  return $string->new(lc($$string));
+  return $string->new(lc($$string))
 }
 
 
@@ -98,14 +117,14 @@ sub split {
   if ( defined $limit ) {
     @rv = CORE::splice(@rv, $limit);
   }
-  map { $string->new($_) } @rv;
+  map { $string->new($_) } @rv
 }
 
 
 sub eq {
   my ($string, $string2) = @_;
 
-  return ($$string eq $string2);
+  return ($$string eq $string2)
 }
 
 
@@ -116,7 +135,7 @@ sub serialize {
   if ( $@ ) {
     croak "serialize is not supported: Storable is missing";
   }
-  return Storable::freeze($string);
+  return Storable::freeze($string)
 }
 
 
@@ -128,12 +147,11 @@ sub match {
   unless ( defined $pattern ) {
     croak "Usage: STRING->match(PATTERN)";
   }
-  my @rv = map { $string->new($_) } $$string =~ m/$pattern/g;
-  if ( defined($&) ) {
-    unshift @rv, $string->new($&);
-    return \@rv;
+  my @rv = map { $string->new($_) } $$string =~ m/($pattern)/g;
+  unless ( defined $rv[0] ) {
+      return undef;
   }
-  return undef;
+  return \@rv
 }
 
 
@@ -308,6 +326,40 @@ Example:
   $str = new String("Hello");
   $newStr = $str->concat(" ", "World");
   $newStr eq "Hello World";
+  $str    eq "Hello";
+
+You can still keep using Perl's built-in concatination operator, C<.> (dot):
+
+  $str = new String("Hello");
+  $str .= " World";
+  $str eq "Hello World";
+
+Notice the differences between the above two examples; the first one returns a $newStr -
+a new string object and doesn't modify the original $str. The second example doesn't
+return/create any additional objects, but modifies the original $str.
+
+You can also use C<+> (plus) operator for concatinating string objects with another string,
+just like in C++ and Java:
+
+  $str = new String("Hello");
+  $str += " World"
+  $str eq "Hello World";
+
+If you don't want to change the original $str:
+
+  $str = new String("Hello");
+  $newStr = $str + " World";
+  $newStr eq "Hello World";
+  $str    eq "Hello";
+
+=item append(LIST)
+
+Same as C<concat()>
+
+=item prepend(LIST)
+
+Similar to C<concat()>, but concatinates the string(s) to the front of the original
+string as returns an appropriate String object. Original string is not modified.
 
 =item split(PATTERN [,LIMIT])
 

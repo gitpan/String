@@ -1,5 +1,10 @@
 Revision history for Perl extension String.
 
+1.5 Tuesday, Jul 22, 2003
+  - supports '+' operator as an alternative to concat() call
+  - append() and prepend() methods introduced
+  - more optimized match() method; no longer relies on $&
+
 1.4 Friday, May 16, 2003
   - match() is improved
 
@@ -13,4 +18,4 @@ Revision history for Perl extension String.
 	- original version; created by h2xs 1.21 with options
 		-AXn String
 
-$Id: Changes,v 1.3 2003/05/16 11:43:20 sherzodr Exp $
+$Id: Changes,v 1.4 2003/07/23 03:49:43 sherzodr Exp $
