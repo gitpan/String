@@ -1,6 +1,13 @@
 Revision history for Perl extension String.
 
-0.01  Sun May 11 08:45:56 2003
+1.3 Friday, May 16, 2003
+  - match() introduced
+  - charAt() now uses substr()
+  - indexOf() now returns whatever built-in index() returns
+  - AUTOLOAD omitted
+
+0.01  Sunday, May 11 2003
 	- original version; created by h2xs 1.21 with options
 		-AXn String
 
+$Id: Changes,v 1.2 2003/05/16 11:09:09 sherzodr Exp $

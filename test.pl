@@ -8,8 +8,8 @@
 use Test;
 use strict;
 use diagnostics;
-BEGIN { 
-  plan tests => 26;
+BEGIN {
+  plan tests => 31;
 };
 require String;
 ok(1); # If we made it this far, we're ok.
@@ -30,7 +30,7 @@ ok($str->charAt(0) eq 'S');
 
 ok($str->charAt( $str->length-1 ) eq 'd');
 ok($str->charAt( $str->length-1 ) eq $str->charAt(-1) );
-ok($str->charAt(0) eq $str->char_at(0));
+#ok($str->charAt(0) eq $str->char_at(0));
 
 my $concat = $str->concat(" ", "Ruzmetov");
 ok($concat eq "Sherzod Ruzmetov");
@@ -44,7 +44,7 @@ ok($str . $str2 eq "SherzodRuzmetov");
 
 
 ok($str->indexOf('er') == 2);
-ok($str->indexOf('er') == $str->index_of('er'));
+#ok($str->indexOf('er') == $str->index_of('er'));
 
 my $uc =  $str->toUpperCase();
 my $lc =  $str->toLowerCase();
@@ -65,11 +65,19 @@ ok(ref( ($str3->split('\s+'))[1]) eq 'String');
 
 ok( ( split /\s+/, $str3 )[1] eq 'World');
 
+my $str4 = new String('Sherzod Ruzmetov <sherzodr@cpan.org>');
 
+my $result = $str4->match('([\w.-]+)@([\w-]+\.[\w.-]+)');
+ok($result);
+ok($result->[0] eq 'sherzodr@cpan.org');
+ok($result->[1] eq 'sherzodr');
+ok($result->[2] eq 'cpan.org');
+ok(ref($result->[0]) eq 'String');
+ok($result->[2]->match('^cpan\.org$') );
 
 # in the end we still need to make sure that with all the above
 # operations we didn't alter the original string
 ok($str eq 'Sherzod');
 ok($str2 eq 'Ruzmetov');
 ok($str3 eq 'Hello World');
-
+ok($str4 eq 'Sherzod Ruzmetov <sherzodr@cpan.org>');
