@@ -1,0 +1,6 @@
+Revision history for Perl extension String.
+
+0.01  Sun May 11 08:45:56 2003
+	- original version; created by h2xs 1.21 with options
+		-AXn String
+
